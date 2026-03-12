@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getProject, createProject } from "@/lib/storage/projects";
 
+export const dynamic = "force-dynamic";
+
 export default function QuestionnairePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
