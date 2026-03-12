@@ -64,7 +64,13 @@ export type UploadFile = z.infer<typeof uploadFileSchema>;
 export const QUESTION_GROUPS: {
   id: QuestionSection;
   title: string;
-  questions: { key: keyof QuestionnaireAnswers[QuestionSection]; label: string; placeholder?: string; type?: "text" | "textarea"; fileUpload?: boolean }[];
+  questions: {
+    key: string;
+    label: string;
+    placeholder?: string;
+    type?: "text" | "textarea";
+    fileUpload?: boolean;
+  }[];
 }[] = [
   {
     id: "projectOverview",
