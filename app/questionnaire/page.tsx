@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getProject, createProject } from "@/lib/storage/projects";
 
 export const dynamic = "force-dynamic";
 
-export default function QuestionnairePage() {
+function QuestionnaireRedirect() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const projectId = searchParams.get("projectId");
@@ -28,5 +28,19 @@ export default function QuestionnairePage() {
     <div className="flex min-h-screen items-center justify-center bg-stone-50">
       <p className="text-stone-600">Redirecting...</p>
     </div>
+  );
+}
+
+export default function QuestionnairePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-stone-50">
+          <p className="text-stone-600">Redirecting...</p>
+        </div>
+      }
+    >
+      <QuestionnaireRedirect />
+    </Suspense>
   );
 }
