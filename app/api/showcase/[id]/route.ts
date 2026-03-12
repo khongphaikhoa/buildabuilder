@@ -19,11 +19,11 @@ export async function GET(
 
   try {
     const pathname = `showcase/${id}.json`;
-    const blob = await get(pathname, { access: "public" });
-    if (!blob) {
+    const result = await get(pathname, { access: "public" });
+    if (!result || result.statusCode !== 200 || !result.stream) {
       return Response.json({ error: "Showcase not found" }, { status: 404 });
     }
-    const text = await blob.text();
+    const text = await new Response(result.stream).text();
     const data = JSON.parse(text);
     return Response.json(data);
   } catch (err) {
