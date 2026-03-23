@@ -8,8 +8,20 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        background: "#F8F9FA",
+        primary: "#2D5BFF",
+        ink: "#1A1A1A",
+        accent: {
+          lavender: "#F0E7FF",
+          mint: "#E1F9F0",
+        },
+      },
+      letterSpacing: {
+        tighthead: "-0.02em",
+      },
       fontFamily: {
-        sans: ["var(--font-geist-sans)"],
+        sans: ["var(--font-inter)", "sans-serif"],
         mono: ["var(--font-geist-mono)"],
       },
     },

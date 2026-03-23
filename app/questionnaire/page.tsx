@@ -25,8 +25,8 @@ function QuestionnaireRedirect() {
   }, [projectId, router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-stone-50">
-      <p className="text-stone-600">Redirecting...</p>
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <p className="text-ink/60">Redirecting...</p>
     </div>
   );
 }
@@ -35,8 +35,8 @@ export default function QuestionnairePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-stone-50">
-          <p className="text-stone-600">Redirecting...</p>
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <p className="text-ink/60">Redirecting...</p>
         </div>
       }
     >

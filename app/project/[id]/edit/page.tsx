@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { QuestionStep } from "@/components/QuestionStep";
 import { ProgressBar } from "@/components/ProgressBar";
+import { GlassNav } from "@/components/GlassNav";
 import { QUESTION_GROUPS, defaultAnswers } from "@/lib/questionnaire/schema";
 import { getProject, saveProject, createProject } from "@/lib/storage/projects";
 import type { QuestionnaireAnswers } from "@/lib/questionnaire/schema";
@@ -79,25 +80,23 @@ export default function ProjectEditPage() {
 
   if (projectIdState === null) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-stone-600">Loading...</p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-ink/60">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-stone-200 bg-white px-6 py-4">
-        <div className="mx-auto flex max-w-2xl items-center justify-between">
-          <Link
-            href={`/project/${projectIdState}`}
-            className="text-sm font-medium text-stone-600 hover:text-stone-900"
-          >
-            ← Project
-          </Link>
-          <ProgressBar current={step + 1} total={QUESTION_GROUPS.length} />
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      <GlassNav>
+        <Link
+          href={`/project/${projectIdState}`}
+          className="text-sm font-medium text-ink/60 transition-colors hover:text-ink"
+        >
+          ← Project
+        </Link>
+        <ProgressBar current={step + 1} total={QUESTION_GROUPS.length} />
+      </GlassNav>
 
       <main className="mx-auto max-w-2xl px-6 py-12">
         <QuestionStep
@@ -111,9 +110,9 @@ export default function ProjectEditPage() {
       </main>
 
       {isSubmitting && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/20">
-          <div className="rounded-xl bg-white p-6 shadow-lg">
-            <p className="text-stone-700">Redirecting to generate your case study...</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/20">
+          <div className="rounded-[32px] border border-gray-100 bg-white p-6 shadow-lg">
+            <p className="text-ink/80">Redirecting to generate your case study...</p>
           </div>
         </div>
       )}

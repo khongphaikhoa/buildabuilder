@@ -33,14 +33,14 @@ function renderMarkdown(text: string): React.ReactNode[] {
     if (line.startsWith("## ")) {
       flushList();
       elements.push(
-        <h2 key={key++} className="mt-8 border-b border-stone-200 pb-2 text-xl font-semibold text-stone-900">
+        <h2 key={key++} className="mt-8 border-b border-gray-100 pb-2 text-xl font-semibold text-ink">
           {line.slice(3)}
         </h2>
       );
     } else if (line.startsWith("### ")) {
       flushList();
       elements.push(
-        <h3 key={key++} className="mt-6 text-lg font-semibold text-stone-900">
+        <h3 key={key++} className="mt-6 text-lg font-semibold text-ink">
           {line.slice(4)}
         </h3>
       );
@@ -49,7 +49,7 @@ function renderMarkdown(text: string): React.ReactNode[] {
     } else if (line.trim()) {
       flushList();
       elements.push(
-        <p key={key++} className="my-4 text-stone-700">
+        <p key={key++} className="my-4 text-ink/80">
           {line.split(/(\*\*.+?\*\*)/g).map((part, i) =>
             part.startsWith("**") && part.endsWith("**") ? (
               <strong key={i}>{part.slice(2, -2)}</strong>
@@ -70,17 +70,17 @@ function renderMarkdown(text: string): React.ReactNode[] {
 
 export function ShowcaseView({ title, projects }: ShowcaseViewProps) {
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <h1 className="mb-12 text-3xl font-bold text-stone-900">{title}</h1>
+        <h1 className="mb-12 text-3xl font-bold tracking-tighthead text-ink">{title}</h1>
         <div className="space-y-16">
           {projects.map((project, i) => (
             <section key={i}>
-              <h2 className="mb-6 text-2xl font-semibold text-stone-900">
+              <h2 className="mb-6 text-2xl font-semibold text-ink">
                 {project.name}
               </h2>
-              <div className="prose prose-stone max-w-none">
-                <div className="space-y-1 text-stone-700">
+              <div className="max-w-none text-ink/80">
+                <div className="space-y-1">
                   {renderMarkdown(project.content)}
                 </div>
               </div>

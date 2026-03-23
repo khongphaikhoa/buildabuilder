@@ -32,7 +32,7 @@ export default function ShowcasePublicPage() {
   if (!id) return null;
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
           <p className="text-lg text-red-600">{error}</p>
         </div>
@@ -41,10 +41,10 @@ export default function ShowcasePublicPage() {
   }
   if (!data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-stone-800" />
-          <p className="text-sm text-stone-600">Loading showcase...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-100 border-t-primary" />
+          <p className="text-sm text-ink/60">Loading showcase...</p>
         </div>
       </div>
     );

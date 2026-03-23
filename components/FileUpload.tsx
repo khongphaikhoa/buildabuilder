@@ -93,8 +93,8 @@ export function FileUpload({ section, files, onChange }: FileUploadProps) {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`rounded-lg border-2 border-dashed p-6 text-center transition ${
-          dragActive ? "border-stone-400 bg-stone-100" : "border-stone-300 bg-stone-50"
+        className={`rounded-2xl border-2 border-dashed p-6 text-center transition ${
+          dragActive ? "border-primary/40 bg-accent-mint/40" : "border-gray-100 bg-background"
         }`}
       >
         <input
@@ -106,10 +106,10 @@ export function FileUpload({ section, files, onChange }: FileUploadProps) {
           className="hidden"
         />
         <label htmlFor={`file-${section}`} className="cursor-pointer">
-          <p className="text-sm font-medium text-stone-600">
+          <p className="text-sm font-medium text-ink/70">
             Drag and drop or click to upload
           </p>
-          <p className="mt-1 text-xs text-stone-500">
+          <p className="mt-1 text-xs text-ink/50">
             Images (jpg, png, webp) or notes (txt, md). Max 5 MB per file, 10 files.
           </p>
         </label>
@@ -122,26 +122,26 @@ export function FileUpload({ section, files, onChange }: FileUploadProps) {
           {files.map((file) => (
             <li
               key={file.id}
-              className="flex items-center gap-3 rounded-lg border border-stone-200 bg-white p-3"
+              className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-3 shadow-sm"
             >
               {isImage(file.type) ? (
                 <img
                   src={file.base64.startsWith("data:") ? file.base64 : `data:${file.type};base64,${file.base64}`}
                   alt={file.name}
-                  className="h-12 w-12 rounded object-cover"
+                  className="h-12 w-12 rounded-xl object-cover"
                 />
               ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded bg-stone-200 text-stone-600">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-ink/60">
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
               )}
-              <span className="min-w-0 flex-1 truncate text-sm text-stone-700">{file.name}</span>
+              <span className="min-w-0 flex-1 truncate text-sm text-ink/80">{file.name}</span>
               <button
                 type="button"
                 onClick={() => removeFile(file.id)}
-                className="rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-red-600"
+                className="rounded-lg p-1 text-ink/40 hover:bg-red-50 hover:text-red-600"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

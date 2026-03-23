@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { GlassNav } from "@/components/GlassNav";
 import { getProject, deleteProject } from "@/lib/storage/projects";
 import type { Project } from "@/lib/storage/projects";
 
@@ -71,17 +72,17 @@ export default function ProjectHubPage() {
 
   if (state === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50">
-        <p className="text-stone-600">Loading...</p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-ink/60">Loading...</p>
       </div>
     );
   }
 
   if (state === "notfound") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 px-6">
-        <p className="text-lg text-stone-700">Project not found</p>
-        <Link href="/" className="mt-4 text-sm font-medium text-stone-600 hover:text-stone-900">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <p className="text-lg text-ink">Project not found</p>
+        <Link href="/" className="mt-4 text-sm font-medium text-ink/60 transition-colors hover:text-ink">
           ← Back to projects
         </Link>
       </div>
@@ -92,92 +93,78 @@ export default function ProjectHubPage() {
     project!.answers.projectOverview.projectName || project!.name || "Untitled Project";
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="border-b border-stone-200 bg-white px-6 py-4">
-        <div className="mx-auto flex max-w-2xl items-center justify-between">
-          <Link
-            href="/"
-            className="text-sm font-medium text-stone-600 hover:text-stone-900"
-          >
-            ← Projects
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      <GlassNav>
+        <Link
+          href="/"
+          className="text-sm font-medium text-ink/60 transition-colors hover:text-ink"
+        >
+          ← Projects
+        </Link>
+      </GlassNav>
 
       <main className="mx-auto max-w-2xl px-6 py-12">
-        <h1 className="mb-8 text-2xl font-bold text-stone-900">{name}</h1>
+        <h1 className="mb-8 text-2xl font-bold tracking-tighthead text-ink">{name}</h1>
 
         {state === "owner" && (
           <div className="space-y-4">
             <div className="flex flex-wrap gap-3">
-              <Link
-                href={`/project/${id}/edit`}
-                className="rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
-              >
+              <Link href={`/project/${id}/edit`} className="btn-primary">
                 Edit questionnaire
               </Link>
               {project!.synthesizedContent ? (
-                <Link
-                  href={`/project/${id}/result`}
-                  className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
-                >
+                <Link href={`/project/${id}/result`} className="btn-secondary">
                   View case study
                 </Link>
               ) : (
                 <Link
                   href={`/project/${id}/edit`}
-                  className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-500"
+                  className="btn-secondary opacity-70"
                 >
                   Complete questionnaire to generate case study
                 </Link>
               )}
-              <button
-                onClick={handleShare}
-                className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
-              >
+              <button type="button" onClick={handleShare} className="btn-secondary">
                 Share link
               </button>
               <button
+                type="button"
                 onClick={handleDelete}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                className="rounded-full px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
               >
                 Delete
               </button>
             </div>
             {shareUrl && (
-              <div className="rounded-lg border border-stone-200 bg-white p-4">
-                <p className="text-sm font-medium text-stone-700">Shareable link (copied to clipboard)</p>
+              <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm">
+                <p className="text-sm font-medium text-ink/80">Shareable link (copied to clipboard)</p>
                 <input
                   type="text"
                   readOnly
                   value={shareUrl}
-                  className="mt-2 w-full rounded border border-stone-300 px-3 py-2 text-sm text-stone-700"
+                  className="mt-2 w-full rounded-xl border border-gray-100 px-3 py-2 text-sm text-ink"
                 />
                 <button
+                  type="button"
                   onClick={() => setShareUrl(null)}
-                  className="mt-2 text-sm text-stone-500 hover:text-stone-700"
+                  className="mt-2 text-sm text-ink/50 transition-colors hover:text-ink"
                 >
                   Dismiss
                 </button>
               </div>
             )}
-            {shareError && (
-              <p className="text-sm text-red-600">{shareError}</p>
-            )}
+            {shareError && <p className="text-sm text-red-600">{shareError}</p>}
           </div>
         )}
 
         {state === "shared" && (
           <div>
             {project!.synthesizedContent ? (
-              <Link
-                href={`/project/${id}/result`}
-                className="inline-block rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
-              >
+              <Link href={`/project/${id}/result`} className="btn-primary inline-flex">
                 View case study
               </Link>
             ) : (
-              <p className="text-stone-600">This project has no case study yet.</p>
+              <p className="text-ink/60">This project has no case study yet.</p>
             )}
           </div>
         )}

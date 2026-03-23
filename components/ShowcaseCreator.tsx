@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { listProjects } from "@/lib/storage/projects";
 import type { Project } from "@/lib/storage/projects";
@@ -103,18 +103,18 @@ export function ShowcaseCreator() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${title}</title>
+  <title>${escapeHtml(title)}</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-stone-50 text-stone-800 font-sans">
+<body class="bg-[#F8F9FA] text-[#1A1A1A] font-sans antialiased">
   <div class="max-w-3xl mx-auto px-6 py-12">
-    <h1 class="text-3xl font-bold mb-12">${title}</h1>
+    <h1 class="text-3xl font-bold mb-12 tracking-tight text-[#1A1A1A]">${escapeHtml(title)}</h1>
     ${items
       .map(
         (item) => `
     <section class="mb-16">
-      <h2 class="text-2xl font-semibold text-stone-900 mb-6">${item.name}</h2>
-      <div class="prose prose-stone max-w-none text-stone-700 whitespace-pre-wrap">${item.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+      <h2 class="text-2xl font-semibold text-[#1A1A1A] mb-6">${escapeHtml(item.name)}</h2>
+      <div class="text-[#1A1A1A]/80 whitespace-pre-wrap leading-relaxed">${item.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
     </section>`
       )
       .join("")}
@@ -133,15 +133,12 @@ export function ShowcaseCreator() {
 
   if (projects.length === 0) {
     return (
-      <div className="rounded-xl border-2 border-dashed border-stone-300 bg-white p-12 text-center">
-        <p className="text-stone-600">No completed projects yet</p>
-        <p className="mt-2 text-sm text-stone-500">
+      <div className="rounded-[32px] border-2 border-dashed border-gray-200 bg-white p-12 text-center shadow-sm">
+        <p className="text-ink/70">No completed projects yet</p>
+        <p className="mt-2 text-sm text-ink/50">
           Complete at least one project with a generated case study to create a showcase
         </p>
-        <Link
-          href="/"
-          className="mt-6 inline-block rounded-lg bg-stone-900 px-6 py-3 text-sm font-medium text-white hover:bg-stone-800"
-        >
+        <Link href="/" className="btn-primary mt-6 inline-flex px-6 py-3 text-base">
           Go to Projects
         </Link>
       </div>
@@ -150,35 +147,37 @@ export function ShowcaseCreator() {
 
   if (shareUrl) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white p-8 shadow-sm">
-        <h2 className="text-xl font-semibold text-stone-900">Your showcase is live</h2>
-        <p className="mt-2 text-stone-600">Share this link:</p>
+      <div className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm">
+        <h2 className="text-xl font-bold tracking-tighthead text-ink">Your showcase is live</h2>
+        <p className="mt-2 text-ink/60">Share this link:</p>
         <div className="mt-4 flex gap-2">
           <input
             type="text"
             readOnly
             value={shareUrl}
-            className="flex-1 rounded-lg border border-stone-300 px-4 py-2 text-stone-700"
+            className="flex-1 rounded-2xl border border-gray-100 px-4 py-2 text-ink"
           />
           <button
+            type="button"
             onClick={() => navigator.clipboard.writeText(shareUrl)}
-            className="rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
+            className="btn-primary shrink-0"
           >
             Copy
           </button>
         </div>
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-wrap gap-3">
           <a
             href={shareUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
+            className="btn-secondary"
           >
             Open Showcase
           </a>
           <button
+            type="button"
             onClick={() => setShareUrl(null)}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-100"
+            className="rounded-full px-4 py-2 text-sm font-medium text-ink/60 hover:bg-gray-50"
           >
             Create Another
           </button>
@@ -190,18 +189,18 @@ export function ShowcaseCreator() {
   return (
     <div className="space-y-8">
       <div>
-        <label className="block text-sm font-medium text-stone-700">Showcase title</label>
+        <label className="block text-sm font-medium text-ink/80">Showcase title</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mt-2 w-full max-w-md rounded-lg border border-stone-300 px-4 py-2 text-stone-900"
+          className="mt-2 w-full max-w-md rounded-2xl border border-gray-100 bg-white px-4 py-2 text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           placeholder="My Portfolio"
         />
       </div>
 
       <div>
-        <h3 className="text-sm font-medium text-stone-700">Select projects to include</h3>
+        <h3 className="text-sm font-medium text-ink/80">Select projects to include</h3>
         <ul className="mt-3 space-y-2">
           {projects.map((p) => {
             const name = p.answers.projectOverview.projectName || p.name;
@@ -210,22 +209,22 @@ export function ShowcaseCreator() {
             return (
               <li
                 key={p.id}
-                className="flex items-center gap-3 rounded-lg border border-stone-200 bg-white p-3"
+                className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-3 shadow-sm"
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => toggleProject(p.id)}
-                  className="h-4 w-4 rounded border-stone-300"
+                  className="h-4 w-4 rounded border-gray-100 text-primary focus:ring-primary"
                 />
-                <span className="min-w-0 flex-1 truncate font-medium text-stone-900">{name}</span>
+                <span className="min-w-0 flex-1 truncate font-medium text-ink">{name}</span>
                 {isSelected && (
                   <div className="flex gap-1">
                     <button
                       type="button"
                       onClick={() => moveUp(p.id)}
                       disabled={idx <= 0}
-                      className="rounded p-1 text-stone-500 hover:bg-stone-100 disabled:opacity-40"
+                      className="rounded-lg p-1 text-ink/50 hover:bg-gray-50 disabled:opacity-40"
                     >
                       ↑
                     </button>
@@ -233,7 +232,7 @@ export function ShowcaseCreator() {
                       type="button"
                       onClick={() => moveDown(p.id)}
                       disabled={idx < 0 || idx >= selectedIds.size - 1}
-                      className="rounded p-1 text-stone-500 hover:bg-stone-100 disabled:opacity-40"
+                      className="rounded-lg p-1 text-ink/50 hover:bg-gray-50 disabled:opacity-40"
                     >
                       ↓
                     </button>
@@ -249,28 +248,38 @@ export function ShowcaseCreator() {
         <p className="text-sm text-red-600">{error}</p>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <button
+          type="button"
           onClick={handlePublish}
           disabled={isPublishing || selectedIds.size === 0}
-          className="rounded-lg bg-stone-900 px-6 py-2 text-sm font-medium text-white hover:bg-stone-800 disabled:opacity-50"
+          className="btn-primary px-6 py-2 disabled:opacity-50"
         >
           {isPublishing ? "Publishing..." : "Publish & Get Link"}
         </button>
         <button
+          type="button"
           onClick={handleExportHtml}
           disabled={selectedIds.size === 0}
-          className="rounded-lg border border-stone-300 px-6 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+          className="btn-secondary px-6 py-2 disabled:opacity-50"
         >
           Export as HTML
         </button>
         <Link
           href="/"
-          className="rounded-lg px-6 py-2 text-sm font-medium text-stone-600 hover:bg-stone-100"
+          className="rounded-full px-6 py-2 text-sm font-medium text-ink/60 hover:bg-gray-50"
         >
           Cancel
         </Link>
       </div>
     </div>
   );
+}
+
+function escapeHtml(s: string) {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

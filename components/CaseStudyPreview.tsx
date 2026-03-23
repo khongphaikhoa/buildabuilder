@@ -28,14 +28,14 @@ function renderMarkdown(text: string): React.ReactNode[] {
     if (line.startsWith("## ")) {
       flushList();
       elements.push(
-        <h2 key={key++} className="mt-8 border-b border-stone-200 pb-2 text-xl font-semibold text-stone-900">
+        <h2 key={key++} className="mt-8 border-b border-gray-100 pb-2 text-xl font-semibold text-ink">
           {line.slice(3)}
         </h2>
       );
     } else if (line.startsWith("### ")) {
       flushList();
       elements.push(
-        <h3 key={key++} className="mt-6 text-lg font-semibold text-stone-900">
+        <h3 key={key++} className="mt-6 text-lg font-semibold text-ink">
           {line.slice(4)}
         </h3>
       );
@@ -45,7 +45,7 @@ function renderMarkdown(text: string): React.ReactNode[] {
       flushList();
       const parts = line.split(/(\*\*.+?\*\*)/g);
       elements.push(
-        <p key={key++} className="my-4 text-stone-700">
+        <p key={key++} className="my-4 text-ink/80">
           {parts.map((part, i) =>
             part.startsWith("**") && part.endsWith("**") ? (
               <strong key={i}>{part.slice(2, -2)}</strong>
@@ -69,20 +69,20 @@ export function CaseStudyPreview({ content, isStreaming }: CaseStudyPreviewProps
     return (
       <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-stone-800" />
-          <p className="text-sm text-stone-600">Generating your case study...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-100 border-t-primary" />
+          <p className="text-sm text-ink/60">Generating your case study...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="prose prose-stone max-w-none">
+    <div className="max-w-none text-ink/80">
       <div className="space-y-1">
         {renderMarkdown(content)}
       </div>
       {isStreaming && (
-        <span className="inline-block h-4 w-2 animate-pulse bg-stone-400" />
+        <span className="inline-block h-4 w-2 animate-pulse bg-primary/50" />
       )}
     </div>
   );

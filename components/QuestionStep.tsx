@@ -36,10 +36,13 @@ export function QuestionStep({
     });
   };
 
+  const fieldClass =
+    "mt-2 w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 text-ink placeholder:text-ink/40 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary";
+
   return (
     <div className="mx-auto max-w-2xl">
-      <h2 className="text-2xl font-semibold text-stone-900">{group.title}</h2>
-      <p className="mt-2 text-stone-600">
+      <h2 className="text-2xl font-bold tracking-tighthead text-ink">{group.title}</h2>
+      <p className="mt-2 text-ink/60">
         Answer the questions below. You can upload process notes or photos where indicated.
       </p>
 
@@ -49,7 +52,7 @@ export function QuestionStep({
             const files = (sectionAnswers?.files as { id: string; name: string; type: string; base64: string; caption?: string; section: QuestionSection }[]) || [];
             return (
               <div key={String(q.key)}>
-                <label className="block text-sm font-medium text-stone-700">
+                <label className="block text-sm font-medium text-ink/80">
                   {q.label}
                 </label>
                 <FileUpload
@@ -68,7 +71,7 @@ export function QuestionStep({
 
           return (
             <div key={String(q.key)}>
-              <label htmlFor={String(q.key)} className="block text-sm font-medium text-stone-700">
+              <label htmlFor={String(q.key)} className="block text-sm font-medium text-ink/80">
                 {q.label}
               </label>
               {isTextarea ? (
@@ -78,7 +81,7 @@ export function QuestionStep({
                   onChange={(e) => updateField(q.key as string, e.target.value)}
                   placeholder={q.placeholder}
                   rows={4}
-                  className="mt-2 w-full rounded-lg border border-stone-300 px-4 py-3 text-stone-900 placeholder-stone-400 focus:border-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-500"
+                  className={fieldClass}
                 />
               ) : (
                 <input
@@ -87,7 +90,7 @@ export function QuestionStep({
                   value={value}
                   onChange={(e) => updateField(q.key as string, e.target.value)}
                   placeholder={q.placeholder}
-                  className="mt-2 w-full rounded-lg border border-stone-300 px-4 py-3 text-stone-900 placeholder-stone-400 focus:border-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-500"
+                  className={fieldClass}
                 />
               )}
             </div>
@@ -96,18 +99,10 @@ export function QuestionStep({
       </div>
 
       <div className="mt-10 flex justify-between">
-        <button
-          type="button"
-          onClick={onBack}
-          className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
-        >
+        <button type="button" onClick={onBack} className="btn-secondary">
           Back
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="rounded-lg bg-stone-900 px-6 py-2 text-sm font-medium text-white hover:bg-stone-800"
-        >
+        <button type="button" onClick={onNext} className="btn-primary px-6 py-2">
           {isLast ? "Generate Case Study" : "Next"}
         </button>
       </div>
