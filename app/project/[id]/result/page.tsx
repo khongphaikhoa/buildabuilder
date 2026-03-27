@@ -14,6 +14,15 @@ import type { Project } from "@/lib/storage/projects";
 
 const DEFAULT_DOCUMENT_TITLE = "UX Portfolio Questionnaire";
 
+const FRAMEWORK_DISPLAY: Record<string, string> = {
+  Prescriptive: "Prescriptive Narrative",
+  Hero: "Hero Journey",
+  FamiliarToForeign: "Familiar to Foreign",
+  Framed: "Framed Narrative",
+  Layered: "Layered Narrative",
+  ContextualInterlude: "Contextual Interlude",
+};
+
 export default function ProjectResultPage() {
   const params = useParams();
   const router = useRouter();
@@ -164,14 +173,37 @@ export default function ProjectResultPage() {
       </GlassNav>
 
       <main className="mx-auto max-w-3xl px-6 py-12">
-        <h1 className="mb-3 text-2xl font-bold tracking-tighthead text-ink">
+        <h1 className="mb-4 text-2xl font-bold tracking-tighthead text-ink">
           {projectName || "Case Study"}
         </h1>
         {frameworkMeta && (
-          <p className="mb-6 inline-flex items-center rounded-full border border-gray-100 bg-white px-3 py-1 text-xs font-medium text-ink/70">
-            Framework: {frameworkMeta.selectedFramework}
-            {frameworkMeta.isInferred ? " (inferred)" : ""}
-          </p>
+          <section className="mb-8 rounded-[28px] border border-primary/20 bg-gradient-to-br from-primary/10 via-white to-accent-lavender/25 p-6 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary/80">
+              Storytelling Framework
+            </p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-ink">
+              {FRAMEWORK_DISPLAY[frameworkMeta.selectedFramework] ??
+                frameworkMeta.selectedFramework}
+              {frameworkMeta.isInferred ? " (Inferred)" : ""}
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-ink/70">
+              {frameworkMeta.frameworkRationale ||
+                "Framework metadata is unavailable. Showing inferred framework from synthesized output."}
+            </p>
+            {frameworkMeta.plotBeats.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {frameworkMeta.plotBeats.slice(0, 6).map((beat, index) => (
+                  <span
+                    key={`${beat.beat}-${index}`}
+                    className="inline-flex items-center rounded-full border border-primary/20 bg-white px-3 py-1 text-xs font-medium text-primary/90"
+                    title={beat.evidence}
+                  >
+                    {beat.beat}
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
         )}
 
         {error && (

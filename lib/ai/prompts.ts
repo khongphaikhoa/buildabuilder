@@ -187,21 +187,42 @@ Task:
    - Framed
    - Layered
    - ContextualInterlude
-2) Write the portfolio case study in MARKDOWN with these sections (use markdown headers "## "):
-   - Context & Problem
-   - Process
-   - Solution
-   - Impact & Collaboration
-   - Learnings
+2) Then write ONE cohesive portfolio case study narrative in MARKDOWN that is structured by the chosen framework's plot logic (not by generic section headings like "Context", "Process", "Solution", etc.).
 3) Also write an "## Insights" section that contains a bullet list of insight texts.
+4) Include a very short framework-fit explanation (2-4 bullet points max) as "## Why this framework fits", grounded in provided evidence only.
 
-Framework fit heuristics:
-- Prescriptive: clear causal chain from context/problem to intervention to outcomes.
-- Hero: clear protagonist, challenge, trials/setbacks, resolution, and return/transfer of learning.
-- FamiliarToForeign: starts in known context and transitions into new/less familiar behavior, context, or understanding.
-- Framed: starts and ends in a similar state with changed understanding ("now-then-now", "here-there-here", or equivalent frame).
-- Layered: sequence of compact images/snapshots that accumulate meaning over time.
-- ContextualInterlude: strong sensory or contextual descriptions that deepen emotional meaning and interpretation.
+Framework fit heuristics (from UX storytelling structure + plot principles):
+- Prescriptive:
+  - Best when inputs are strongest as a logical argument with clear causality.
+  - Prefer when facts are explicit and linear: Given context -> Event/constraint -> Response -> Outcome.
+  - Emphasize plausibility with small justified steps; avoid big unsupported leaps.
+- Hero:
+  - Best when there is a central actor (user, team, or designer) facing meaningful obstacles.
+  - Should show journey arc: call to action, resistance/trials, breakthrough, and return with changed capability/understanding.
+  - Works well when setbacks and recovery are concrete in the input.
+- FamiliarToForeign:
+  - Best when story must lead audience from accepted reality into a less familiar concept/design.
+  - Start with recognizable context and gradually bridge to the new model via parallels and transition moments.
+  - Use when adoption or conceptual shift is core to the case.
+- Framed:
+  - Best when beginning and ending states mirror each other but meaning changes (Now-Then-Now, Here-There-Here, Me-Them-Me).
+  - Use to highlight contrast over time while preserving continuity.
+  - Ending should echo opening language with a clear shift in understanding or capability.
+- Layered:
+  - Best when evidence comes as multiple concrete snapshots that accumulate into meaning.
+  - Build with concise image-like moments; pattern emerges late rather than explained upfront.
+  - Use when emotional or experiential texture matters as much as procedural sequence.
+- ContextualInterlude:
+  - Best when sensory/contextual detail is crucial for audience empathy or interpretation.
+  - Interludes should temporarily pause forward action, add texture, then rejoin the main narrative.
+  - Use sparingly and purposefully to support the core plot rather than replace it.
+
+Plot and structure quality checks:
+- Coverage: include all major facts and constraints from user inputs.
+- Coherence: sequence is understandable even if not purely chronological.
+- Plausibility: every major claim feels believable at that point in the story.
+- Fit: chosen framework matches the actual evidence pattern, not forced.
+- Audience imagination: enough concrete detail to trust, enough openness to engage.
 
 Required beat names by framework:
 - Prescriptive: ["GivenContext", "TriggerEvent", "Intervention", "Outcome"]
@@ -222,6 +243,7 @@ At the end of your response, you MUST include these exact JSON blocks with exact
 {
   "selectedFramework": "Prescriptive|Hero|FamiliarToForeign|Framed|Layered|ContextualInterlude",
   "frameworkRationale": "short rationale tied to input signals",
+  "fitSignals": ["2-4 short bullets explaining why this framework matches the inputs"],
   "plotBeats": [
     { "beat": "RequiredBeatName", "evidence": "short excerpt grounded in user input" }
   ]
@@ -241,9 +263,11 @@ At the end of your response, you MUST include these exact JSON blocks with exact
 
 Hard rules:
 - selectedFramework MUST be one of the six allowed framework names.
+- The main case study body must be a single cohesive narrative organized by the selected framework's beats, not a generic section-by-section report.
 - plotBeats MUST include all required beats for the selected framework, using the exact beat names listed above.
 - Every plotBeats entry MUST include non-empty "beat" and "evidence".
 - frameworkRationale must be concise (max 2 sentences) and based only on supplied inputs.
+- fitSignals must include 2-4 concise bullets and each must map to concrete input evidence.
 - For every insight bullet in "## Insights", there MUST be a corresponding entry in the JSON "insights" array with the same or equivalent "text".
 - Every JSON insight entry MUST have "sources" with length >= 1.
 - Every source item MUST include both "fieldPath" and a non-empty "snippet".
@@ -253,4 +277,5 @@ Hard rules:
 
 Output formatting rules:
 - The markdown case study should NOT include source details inline; sources are only in the JSON block.
+- Do not use the fixed headings "## Context & Problem", "## Process", "## Solution", "## Impact & Collaboration", or "## Learnings" for the main narrative.
 - Output only the case study content in markdown plus the two JSON blocks. No explanations.`;
