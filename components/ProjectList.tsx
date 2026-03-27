@@ -53,10 +53,7 @@ export function ProjectList() {
 
       <main className="mx-auto max-w-6xl px-6 pb-16 pt-12">
         <section className="text-center">
-          <span className="inline-flex rounded-full border border-gray-100 bg-white px-4 py-1.5 text-sm font-medium text-primary shadow-sm">
-            Join 10k+ learners
-          </span>
-          <h2 className="mt-6 text-4xl font-bold tracking-tighthead text-ink sm:text-5xl">
+          <h2 className="text-4xl font-bold tracking-tighthead text-ink sm:text-5xl">
             Turn notes into portfolio-ready case studies
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-ink/60">
@@ -80,6 +77,28 @@ export function ProjectList() {
             <p className="text-sm font-medium text-ink/60">Export ready</p>
             <p className="mt-2 text-4xl font-bold tabular-nums text-ink">1-click</p>
             <p className="mt-2 text-xs text-ink/50">Case study & showcase links</p>
+          </div>
+
+          {/* Spotlight */}
+          <div className="col-span-12">
+            <div className="flex flex-col justify-between gap-8 rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg motion-reduce:hover:translate-y-0 md:flex-row md:items-center">
+              <div className="max-w-xl">
+                <h3 className="text-2xl font-bold tracking-tighthead text-ink">
+                  One flow from messy notes to interview-ready case study
+                </h3>
+                <p className="mt-3 text-ink/60">
+                  Generate a synthesized narrative, refine in place, then share a link or bundle projects into a showcase page.
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-3">
+                <button type="button" onClick={handleCreate} className="btn-primary px-6 py-3 text-base">
+                  Start a project
+                </button>
+                <Link href="/showcase" className="btn-secondary px-6 py-3 text-base">
+                  Build a showcase
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Feature 8 + 4 */}
@@ -116,28 +135,6 @@ export function ProjectList() {
             </div>
           </div>
 
-          {/* Spotlight */}
-          <div className="col-span-12">
-            <div className="flex flex-col justify-between gap-8 rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg motion-reduce:hover:translate-y-0 md:flex-row md:items-center">
-              <div className="max-w-xl">
-                <h3 className="text-2xl font-bold tracking-tighthead text-ink">
-                  One flow from messy notes to interview-ready case study
-                </h3>
-                <p className="mt-3 text-ink/60">
-                  Generate a synthesized narrative, refine in place, then share a link or bundle projects into a showcase page.
-                </p>
-              </div>
-              <div className="flex shrink-0 flex-wrap gap-3">
-                <button type="button" onClick={handleCreate} className="btn-primary px-6 py-3 text-base">
-                  Start a project
-                </button>
-                <Link href="/showcase" className="btn-secondary px-6 py-3 text-base">
-                  Build a showcase
-                </Link>
-              </div>
-            </div>
-          </div>
-
           {/* Projects */}
           <div className="col-span-12">
             <h2 className="mb-6 text-lg font-bold tracking-tighthead text-ink">Your projects</h2>
@@ -155,11 +152,11 @@ export function ProjectList() {
               <ul className="space-y-4">
                 {projects.map((project) => (
                   <li key={project.id}>
-                    <Link
-                      href={`/project/${project.id}`}
-                      className="card-bento-row group flex items-center justify-between gap-4"
-                    >
-                      <div className="min-w-0 flex-1">
+                    <div className="card-bento-row group flex items-center justify-between gap-4">
+                      <Link
+                        href={`/project/${project.id}`}
+                        className="min-w-0 flex-1 rounded-2xl py-1 text-left outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-primary"
+                      >
                         <p className="truncate font-medium text-ink">
                           {project.name === "Untitled Project" && project.answers.projectOverview.projectName
                             ? project.answers.projectOverview.projectName
@@ -171,12 +168,11 @@ export function ProjectList() {
                             <span className="ml-2 text-emerald-600">• Complete</span>
                           )}
                         </p>
-                      </div>
+                      </Link>
                       <div className="flex shrink-0 items-center gap-2">
                         {project.synthesizedContent && (
                           <Link
                             href={`/project/${project.id}/result`}
-                            onClick={(e) => e.stopPropagation()}
                             className="rounded-full border border-gray-100 bg-white px-3 py-1.5 text-sm font-medium text-ink/80 hover:bg-gray-50"
                           >
                             View
@@ -190,7 +186,7 @@ export function ProjectList() {
                           Delete
                         </button>
                       </div>
-                    </Link>
+                    </div>
                   </li>
                 ))}
               </ul>

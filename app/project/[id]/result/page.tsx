@@ -3,10 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { CaseStudyPreview } from "@/components/CaseStudyPreview";
+import {
+  CaseStudyPreview,
+  extractSynthesisMetadata,
+  type SynthesisFrameworkMeta,
+} from "@/components/CaseStudyPreview";
 import { GlassNav } from "@/components/GlassNav";
 import { getProject, saveProject } from "@/lib/storage/projects";
 import type { Project } from "@/lib/storage/projects";
+
+const DEFAULT_DOCUMENT_TITLE = "UX Portfolio Questionnaire";
 
 export default function ProjectResultPage() {
   const params = useParams();
@@ -15,6 +21,9 @@ export default function ProjectResultPage() {
 
   const [project, setProject] = useState<Project | null>(null);
   const [content, setContent] = useState("");
+  const [frameworkMeta, setFrameworkMeta] = useState<SynthesisFrameworkMeta | null>(
+    null
+  );
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [projectName, setProjectName] = useState("");
@@ -22,11 +31,15 @@ export default function ProjectResultPage() {
   const hasFetched = useRef(false);
 
   const persistContent = useCallback(
-    (newContent: string) => {
+    (newContent: string, newMeta?: SynthesisFrameworkMeta) => {
       if (!id) return;
       const p = getProject(id);
       if (p) {
-        saveProject({ ...p, synthesizedContent: newContent });
+        saveProject({
+          ...p,
+          synthesizedContent: newContent,
+          synthesisMeta: newMeta ?? p.synthesisMeta,
+        });
       }
     },
     [id]
@@ -44,6 +57,10 @@ export default function ProjectResultPage() {
       );
       if (local.synthesizedContent) {
         setContent(local.synthesizedContent);
+        setFrameworkMeta(
+          local.synthesisMeta ??
+            extractSynthesisMetadata(local.synthesizedContent).frameworkMeta
+        );
         return;
       }
       if (hasFetched.current) return;
@@ -69,7 +86,9 @@ export default function ProjectResultPage() {
             full += decoder.decode(value, { stream: true });
             setContent(full);
           }
-          persistContent(full);
+          const parsedMeta = extractSynthesisMetadata(full).frameworkMeta;
+          setFrameworkMeta(parsedMeta);
+          persistContent(full, parsedMeta);
         })
         .catch((err) => {
           setError(err instanceof Error ? err.message : "Failed to generate");
@@ -94,10 +113,24 @@ export default function ProjectResultPage() {
             data.answers.projectOverview.projectName || data.name
           );
           setContent(data.synthesizedContent || "");
+          if (data.synthesizedContent) {
+            setFrameworkMeta(
+              data.synthesisMeta ??
+                extractSynthesisMetadata(data.synthesizedContent).frameworkMeta
+            );
+          }
         }
       })
       .catch(() => router.push("/"));
   }, [id, router, persistContent]);
+
+  useEffect(() => {
+    const displayTitle = projectName.trim() || "Case Study";
+    document.title = displayTitle;
+    return () => {
+      document.title = DEFAULT_DOCUMENT_TITLE;
+    };
+  }, [projectName]);
 
   if (!id) return null;
 
@@ -131,9 +164,15 @@ export default function ProjectResultPage() {
       </GlassNav>
 
       <main className="mx-auto max-w-3xl px-6 py-12">
-        <h1 className="mb-8 text-2xl font-bold tracking-tighthead text-ink">
+        <h1 className="mb-3 text-2xl font-bold tracking-tighthead text-ink">
           {projectName || "Case Study"}
         </h1>
+        {frameworkMeta && (
+          <p className="mb-6 inline-flex items-center rounded-full border border-gray-100 bg-white px-3 py-1 text-xs font-medium text-ink/70">
+            Framework: {frameworkMeta.selectedFramework}
+            {frameworkMeta.isInferred ? " (inferred)" : ""}
+          </p>
+        )}
 
         {error && (
           <div className="rounded-[32px] border border-red-200 bg-red-50 p-4 text-red-700">

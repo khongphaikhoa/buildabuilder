@@ -9,6 +9,7 @@ import { GlassNav } from "@/components/GlassNav";
 import { QUESTION_GROUPS, defaultAnswers } from "@/lib/questionnaire/schema";
 import { getProject, saveProject, createProject } from "@/lib/storage/projects";
 import type { QuestionnaireAnswers } from "@/lib/questionnaire/schema";
+import { normalizeAnswersToV2 } from "@/lib/questionnaire/normalizeToV2";
 
 export default function ProjectEditPage() {
   const params = useParams();
@@ -26,7 +27,13 @@ export default function ProjectEditPage() {
     const project = getProject(id);
     if (project) {
       setProjectIdState(project.id);
-      setAnswers(project.answers);
+      const normalized = normalizeAnswersToV2(project.answers);
+      setAnswers(normalized);
+      // The result page reads from localStorage; persist normalized v2 so synthesis uses traceability.
+      saveProject({
+        ...project,
+        answers: normalized,
+      });
     } else {
       const newProject = createProject();
       setProjectIdState(newProject.id);

@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "UX Portfolio Questionnaire",
   description: "Create polished portfolio case studies from your project notes",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

@@ -1,11 +1,27 @@
 import type { QuestionnaireAnswers } from "@/lib/questionnaire/schema";
 
+export type StoryFramework =
+  | "Prescriptive"
+  | "Hero"
+  | "FamiliarToForeign"
+  | "Framed"
+  | "Layered"
+  | "ContextualInterlude";
+
+export interface SynthesisMeta {
+  selectedFramework: StoryFramework;
+  frameworkRationale: string;
+  plotBeats: { beat: string; evidence: string }[];
+  isInferred?: boolean;
+}
+
 export interface Project {
   id: string;
   name: string;
   createdAt: string;
   answers: QuestionnaireAnswers;
   synthesizedContent: string;
+  synthesisMeta?: SynthesisMeta;
 }
 
 const STORAGE_KEY = "ux-portfolio-projects";
@@ -78,12 +94,17 @@ export function createProject(): Project {
     answers: {
       projectOverview: { projectName: "", clientContext: "", timeline: "" },
       problemAndGoals: { problem: "", targetUsers: "", successCriteria: "", files: [] },
-      process: { research: "", ideation: "", iteration: "", keyDecisions: "", files: [] },
-      solution: { finalDesign: "", rationale: "", tradeoffs: "", files: [] },
+      traceAndExecution: {
+        evidenceFiles: [],
+        insights: [],
+        decisions: [],
+        insightToDecision: [],
+      },
       impactAndLearnings: { metrics: "", feedback: "", personalLearnings: "", files: [] },
       roleAndCollaboration: { contribution: "", teamSize: "", stakeholders: "" },
     },
     synthesizedContent: "",
+    synthesisMeta: undefined,
   };
   saveProject(project);
   return project;
