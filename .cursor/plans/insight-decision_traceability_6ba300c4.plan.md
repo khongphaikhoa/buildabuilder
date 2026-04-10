@@ -1,7 +1,22 @@
 ---
 name: Insight-Decision Traceability
-overview: Extend the questionnaire data model to support explicit Evidence→Execution traceability via an Insight→Decision mapping, and update prompt-building so the AI can synthesize with traceability.
-todos: []
+overview: Extend the questionnaire for Evidence→Insight→Decision mapping, decision-first synthesis JSON, and results UI that groups decision cards under linked evidence images using deterministic client-side mapping.
+todos:
+  - id: trace-helpers
+    content: Add lib/questionnaire/traceability.ts — decisionId → evidenceFileIds via insights + insightToDecision
+    status: pending
+  - id: prompt-decision-id
+    content: Extend DECISIONS_JSON in prompts.ts with questionnaireDecisionId; update CaseStudyPreview parser
+    status: pending
+  - id: preview-grouped-ui
+    content: CaseStudyPreview — accept traceAndExecution, render images + grouped decision cards + fallbacks
+    status: pending
+  - id: result-pass-props
+    content: Project result page — pass v2 traceAndExecution to CaseStudyPreview when available
+    status: pending
+  - id: publish-note
+    content: Verify blob Project shape; document or gate image grouping for non-owner
+    status: pending
 isProject: false
 ---
 
@@ -109,10 +124,33 @@ Plan:
 ```mermaid
 flowchart LR
   UserUploads[Upload evidence files] --> TraceUI[Traceability Builder UI]
-  TraceUI --> Answers[answers.traceAndExecution (evidence/insights/decisions/mapping)]
+  TraceUI --> Answers[answers.traceAndExecution]
   Answers --> Synthesize[POST /api/synthesize]
-  Synthesize --> Prompt[buildUserPrompt() includes insightToDecision]
-  Prompt --> AI[AI generates case study with traceability]
+  Synthesize --> Prompt[buildUserPrompt includes insightToDecision]
+  Prompt --> AI[AI generates case study + DECISIONS_JSON]
+```
+
+
+
+## Data flow (results page — owner, evidence under decisions)
+
+Continuation after synthesis: use **client-side grouping** so images and decisions align with the questionnaire graph (no need to embed images in streamed markdown).
+
+```mermaid
+flowchart TD
+  subgraph owner [Owner result page]
+    P[Project from localStorage]
+    A[answers.traceAndExecution]
+    C[synthesizedContent]
+    P --> A
+    P --> C
+    A --> BuildMaps[Build evidenceId to image URL + decisionId to evidenceIds]
+    C --> Parse[extractSynthesisMetadata]
+    Parse --> Decisions[decisions from DECISIONS_JSON]
+    BuildMaps --> Group[group decisions under each image]
+    Decisions --> Group
+    Group --> Render[CaseStudyPreview sections per image]
+  end
 ```
 
 
@@ -125,10 +163,121 @@ flowchart LR
 - `components/TraceabilityBuilder.tsx` (new)
 - `[lib/ai/prompts.ts]`
 - `[app/api/synthesize/route.ts]` (verify union compatibility)
+- `[lib/questionnaire/traceability.ts]` (new — helper: decision → evidence file IDs; see continuation section)
+- `[components/CaseStudyPreview.tsx]`
+- `[app/project/[id]/result/page.tsx]`
+
+## [260408] Alignment update (framework + decisions-first output)
+
+To reflect the newer AI synthesis direction, this plan should align with the following output contract and UX behavior:
+
+- The markdown case study should be concise for portfolio reuse:
+  - target length: ~180-320 words
+  - hard max: 380 words
+- The main markdown narrative should not contain a standalone `## Insights` section (avoid duplicate content with structured metadata).
+- Structured traceability output should be decision-first (not insight-first):
+  - Replace `INSIGHTS_JSON` with `DECISIONS_JSON` in prompt/renderer contracts.
+  - Decision entry shape:
+    - `decisionText` (card heading)
+    - `decisionDetails` (visible content)
+    - `rationaleInsight` (hover rationale)
+    - `sources[]` (traceable field/snippet pairs)
+- UI behavior on result preview should render decision cards:
+  - decision title/details visible by default
+  - rationale shown on hover
+  - sources shown with rationale in hover panel
+
+### Contract markers (updated)
+
+- `<!--DECISIONS_JSON_START--> ... <!--DECISIONS_JSON_END-->`
+- `<!--FRAMEWORK_JSON_START--> ... <!--FRAMEWORK_JSON_END-->` remains for framework fit metadata
+
+### File-level implications
+
+- `[lib/ai/prompts.ts]`: enforce concise narrative + decisions JSON schema + no markdown insights section.
+- `[components/CaseStudyPreview.tsx]`: parse `DECISIONS_JSON`; strip markdown insights section; render decisions-first cards with hover rationale.
+- `[app/project/[id]/result/page.tsx]`: keep framework emphasis and metadata display as primary context for the narrative.
+
+## [260409] Continuation — Evidence images grouped with decisions on results page
+
+Merged from the standalone “evidence images under decisions” plan: this is the **next slice** after traceability + `DECISIONS_JSON` exist.
+
+### Current state (results UI)
+
+- **Images** for traceability live in `[lib/questionnaire/schema.ts]` as `traceAndExecution.evidenceFiles` (`UploadFile`: `id`, `name`, `type`, `base64`, …). Image MIME types are handled in `[lib/ai/client.ts]` for the model; the **UI does not yet render** those files under grouped decisions unless the continuation below is implemented.
+- **Linkage graph (v2)**:
+  - `insights[].evidenceFileIds` → evidence files
+  - `decisions[].linkedInsightIds` → insights
+  - `insightToDecision[]` reinforces insight ↔ decision pairs
+- `**[app/project/[id]/result/page.tsx]`** only passes `content` (and streaming flag) to `[components/CaseStudyPreview.tsx]` unless extended. Parsed `DECISIONS_JSON` may render as a **flat list** without image context until grouping is wired.
+- **Synthesized decisions** need a stable join to questionnaire rows: add `**questionnaireDecisionId`** in `DECISIONS_JSON` (see below); fallback to index match for old cached content.
+
+### 1) Build evidence → decision mapping (deterministic)
+
+For each questionnaire decision `d`:
+
+1. Start from `d.linkedInsightIds`.
+2. Optionally union insights implied by `insightToDecision` where `decisionId === d.id` (handles cases where only the mapping table is complete).
+3. For each linked insight, collect `insight.evidenceFileIds`.
+4. **Union** those file IDs → set of evidence images “supporting” that decision.
+
+Helper: new module `[lib/questionnaire/traceability.ts]` with `getEvidenceIdsForDecision(trace, decisionId)` and `buildDecisionToEvidenceMap(trace)`.
+
+**Edge cases:**
+
+- Decision with **no** linked insights / no evidence → **“Unlinked decisions”** block (still show cards).
+- One decision tied to **multiple** images → recommend **duplicate the card under each relevant image** for portfolio clarity (optional dedupe by `decisionId`).
+
+### 2) Stabilize matching: `questionnaireDecisionId` in `DECISIONS_JSON`
+
+Update `[lib/ai/prompts.ts]` so each synthesized decision includes:
+
+- `questionnaireDecisionId`: must equal `traceAndExecution.decisions[i].id` when traceability is present (**id is authoritative** for UI merge).
+
+Extend `[components/CaseStudyPreview.tsx]` parser to accept optional `questionnaireDecisionId`.
+
+**Fallback:** match by **array index** when ids missing and lengths align.
+
+### 3) Pass trace context into `CaseStudyPreview`
+
+- Extend props: `traceAndExecution` (or v2 `answers` with type guard).
+- On result page: when local/project has v2 answers, pass `traceAndExecution` into `CaseStudyPreview`.
+
+**Suggested render order:**
+
+1. Framework hero (if present)
+2. Markdown narrative
+3. For each **image** in `evidenceFiles` (filter `image/jpeg|png|webp`): render image + caption
+4. Under each image: decision cards whose mapping includes that `evidenceFile.id`
+5. Bottom: unlinked decisions + optional “evidence with no decisions”
+
+Reuse existing decision card markup and hover behavior; only the **layout** becomes grouped sections.
+
+### 4) Non-owner / published project caveat
+
+`[app/api/project/[id]/route.ts]` returns JSON from blob. If payloads **omit** `base64` for size, viewers will not have images unless you store public URLs or extend publish. **Gate** image sections on usable `base64` or URL; document owner-only behavior until publish supports assets.
+
+### 5) Prompt tweak (optional)
+
+In `[lib/ai/prompts.ts]`, remind the model that `sources` may reference `traceAndExecution.evidenceFiles` by **filename** when tied to that evidence. **UI grouping does not depend on the model**—only `questionnaireDecisionId` + deterministic graph.
+
+### Files to touch (continuation summary)
+
+
+| File                                  | Change                                                               |
+| ------------------------------------- | -------------------------------------------------------------------- |
+| `[lib/questionnaire/traceability.ts]` | New: map decision → evidence file IDs                                |
+| `[lib/ai/prompts.ts]`                 | Add `questionnaireDecisionId` to `DECISIONS_JSON` schema             |
+| `[components/CaseStudyPreview.tsx]`   | Optional `traceAndExecution` prop; parse id; grouped layout + images |
+| `[app/project/[id]/result/page.tsx]`  | Pass v2 trace data into preview                                      |
+
 
 ## Definition of done
 
 - The questionnaire supports evidence→insight, insight→decision mapping.
-- The AI prompt contains the mapping so outputs can be traced.
+- The AI prompt outputs decision-first traceability JSON (`DECISIONS_JSON`) so outputs can be traced.
+- Result UI surfaces decisions (title/details) and insight rationale on hover without duplicating insights in markdown.
+- **Continuation:** Owner viewing results sees each trace evidence **image** with the correct **decision cards** underneath, derived from questionnaire links (not from model guesswork); unlinked decisions and old syntheses without `questionnaireDecisionId` degrade gracefully (flat list or index match).
+- Non-owner limitation documented if blob payload lacks image bytes.
 - Old projects still synthesize successfully (v1 schema remains valid).
 

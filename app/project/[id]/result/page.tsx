@@ -218,7 +218,15 @@ export default function ProjectResultPage() {
         {!isOwner && !content && project ? (
           <p className="text-ink/60">This project has no case study yet.</p>
         ) : (
-          <CaseStudyPreview content={content} isStreaming={isStreaming} />
+          <CaseStudyPreview
+            content={content}
+            isStreaming={isStreaming}
+            traceAndExecution={
+              project && "traceAndExecution" in project.answers
+                ? project.answers.traceAndExecution
+                : null
+            }
+          />
         )}
       </main>
     </div>

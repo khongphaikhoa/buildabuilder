@@ -188,7 +188,9 @@ Task:
    - Layered
    - ContextualInterlude
 2) Then write ONE cohesive portfolio case study narrative in MARKDOWN that is structured by the chosen framework's plot logic (not by generic section headings like "Context", "Process", "Solution", etc.).
-3) Also write an "## Insights" section that contains a bullet list of insight texts.
+3) Keep the narrative concise for reuse in an existing portfolio:
+   - Target 180-320 words total for the main narrative.
+   - Absolute max 380 words for the main narrative.
 4) Include a very short framework-fit explanation (2-4 bullet points max) as "## Why this framework fits", grounded in provided evidence only.
 
 Framework fit heuristics (from UX storytelling structure + plot principles):
@@ -232,9 +234,10 @@ Required beat names by framework:
 - Layered: ["ImageSequence", "PatternEmerges", "InterpretiveTurn"]
 - ContextualInterlude: ["ContextDetail", "InterludeMeaning", "NarrativeRejoin"]
 
-Traceability rule for Insights:
-- If traceability inputs are present (Evidence → Insights → Decisions), create ONE insight bullet for EACH user-provided item in traceAndExecution.insights[] (in the same order). You may polish wording, but the meaning must remain faithful to the user insight text.
-- If traceability inputs are not present, you may create 3–5 insights, but each one must still have sources referencing user inputs.
+Traceability rule for Decisions:
+- If traceability inputs are present (Evidence → Insights → Decisions), create ONE decision JSON entry for EACH user-provided item in traceAndExecution.decisions[] (in the same order). You may polish wording, but meaning must remain faithful.
+- When traceability is present, every decision JSON entry MUST include "questionnaireDecisionId" matching the corresponding traceAndExecution.decisions[].id (this id is used to align UI with evidence images).
+- If traceability inputs are not present, create 2-4 decision entries inferred from the case, each grounded in user-provided inputs (omit questionnaireDecisionId or use empty string).
 
 IMPORTANT TRACEABILITY OUTPUT CONTRACT
 At the end of your response, you MUST include these exact JSON blocks with exact markers:
@@ -250,26 +253,31 @@ At the end of your response, you MUST include these exact JSON blocks with exact
 }
 <!--FRAMEWORK_JSON_END-->
 
-<!--INSIGHTS_JSON_START-->
+<!--DECISIONS_JSON_START-->
 {
-  "insights": [
+  "decisions": [
     {
-      "text": "...",
+      "questionnaireDecisionId": "same id as traceAndExecution.decisions[].id when traceability is present",
+      "decisionText": "short decision title",
+      "decisionDetails": "1-2 sentence explanation of what was done",
+      "rationaleInsight": "the key insight that explains why this decision was made",
       "sources": [ { "fieldPath": "a.question.path", "snippet": "short excerpt" } ]
     }
   ]
 }
-<!--INSIGHTS_JSON_END-->
+<!--DECISIONS_JSON_END-->
 
 Hard rules:
 - selectedFramework MUST be one of the six allowed framework names.
 - The main case study body must be a single cohesive narrative organized by the selected framework's beats, not a generic section-by-section report.
+- The main case study body must stay within the length limits above.
 - plotBeats MUST include all required beats for the selected framework, using the exact beat names listed above.
 - Every plotBeats entry MUST include non-empty "beat" and "evidence".
 - frameworkRationale must be concise (max 2 sentences) and based only on supplied inputs.
 - fitSignals must include 2-4 concise bullets and each must map to concrete input evidence.
-- For every insight bullet in "## Insights", there MUST be a corresponding entry in the JSON "insights" array with the same or equivalent "text".
-- Every JSON insight entry MUST have "sources" with length >= 1.
+- Every decision JSON entry MUST include non-empty "decisionText", "decisionDetails", and "rationaleInsight".
+- When traceability inputs exist, every decision JSON entry MUST include a non-empty "questionnaireDecisionId" that matches an id in traceAndExecution.decisions[].
+- Every decision JSON entry MUST have "sources" with length >= 1.
 - Every source item MUST include both "fieldPath" and a non-empty "snippet".
 - Sources must reference ONLY user-provided inputs (questionnaire fields or uploaded evidence filenames/text).
 - Do not invent events, stakeholders, metrics, or outcomes that are not implied by provided inputs.
@@ -277,5 +285,6 @@ Hard rules:
 
 Output formatting rules:
 - The markdown case study should NOT include source details inline; sources are only in the JSON block.
+- Do NOT add a standalone "## Insights" section in markdown; insights should live in decisions JSON as rationaleInsight.
 - Do not use the fixed headings "## Context & Problem", "## Process", "## Solution", "## Impact & Collaboration", or "## Learnings" for the main narrative.
 - Output only the case study content in markdown plus the two JSON blocks. No explanations.`;
